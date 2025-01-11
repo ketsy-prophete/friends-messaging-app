@@ -1,8 +1,9 @@
 using myApi.Models;
 using myApi.Repositories;
+using Microsoft.AspNetCore.Mvc;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 
 namespace myApi.Controllers
 {
@@ -17,6 +18,16 @@ namespace myApi.Controllers
         {
             _logger = logger;
             _tweetRepository = repository;
+        }
+
+        private int? GetUserNameFromToken()
+        {
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "UserId");
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out var userId))
+            {
+                return null;
+            }
+            return userId;
         }
 
         [HttpPost]
